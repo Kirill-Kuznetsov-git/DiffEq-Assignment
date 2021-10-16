@@ -1,7 +1,7 @@
 
 
 class Equation:
-        
+    pass
 
 
 class AnalyticalSolution(Equation):

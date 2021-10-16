@@ -1,44 +1,77 @@
 import sys
-import time
-
-import numpy as np
-
-from matplotlib.backends.qt_compat import QtCore, QtWidgets
-from matplotlib.backends.backend_qt5agg import (FigureCanvas, NavigationToolbar2QT as NavigationToolbar)
-from matplotlib.figure import Figure
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QWidget, QTabWidget, QVBoxLayout
 
 
-class ApplicationWindow(QtWidgets.QMainWindow):
+class App(QMainWindow):
+
     def __init__(self):
         super().__init__()
-        self._main = QtWidgets.QWidget()
+        self.title = 'PyQt5 tabs - pythonspot.com'
+        self.left = 100
+        self.top = 100
+        self.width = 1000
+        self.height = 700
+        self.setWindowTitle(self.title)
+        self.setGeometry(self.left, self.top, self.width, self.height)
+
+        self.table_widget = MyTableWidget(self)
+        self.my_widget = MyWidget(self)
+
+        self._main = QWidget()
         self.setCentralWidget(self._main)
-        layout = QtWidgets.QVBoxLayout(self._main)
-
-        dynamic_canvas = FigureCanvas(Figure(figsize=(5, 3)))
-        layout.addWidget(dynamic_canvas)
-
-        self._dynamic_ax = dynamic_canvas.figure.subplots()
+        layout = QVBoxLayout(self._main)
+        layout.addWidget(self.table_widget)
+        layout.addWidget(self.my_widget)
+        self.setLayout(layout)
 
 
 
-    def _update_canvas(self):
-        t = np.linspace(0, 10, 101)
-        # Shift the sinusoid as a function of time.
-        self._line.set_data(t, np.sin(t + time.time()))
-        self._line.figure.canvas.draw()
+        self.show()
 
 
-if __name__ == "__main__":
-    # Check whether there is already a running QApplication (e.g., if running
-    # from an IDE).
-    qapp = QtWidgets.QApplication.instance()
-    if not qapp:
-        qapp = QtWidgets.QApplication(sys.argv)
+class MyWidget(QWidget):
 
-    app = ApplicationWindow()
-    app.show()
-    app.activateWindow()
-    app.raise_()
-    qapp.exec_()
+    def __init__(self, parent):
+        super(QWidget, self).__init__(parent)
+        self.layout = QVBoxLayout(self)
 
+        self.pushButton1 = QPushButton("button")
+        self.pushButton1.setGeometry(200, 150, 100, 40)
+        self.layout.addWidget(self.pushButton1)
+        self.setLayout(self.layout)
+
+
+
+class MyTableWidget(QWidget):
+
+    def __init__(self, parent):
+        super(QWidget, self).__init__(parent)
+        self.layout = QVBoxLayout(self)
+
+        # Initialize tab screen
+        self.tabs = QTabWidget()
+        self.tab1 = QWidget()
+        self.tab2 = QWidget()
+        self.tabs.resize(300, 200)
+
+        # Add tabs
+        self.tabs.addTab(self.tab1, "Tab 1")
+        self.tabs.addTab(self.tab2, "Tab 2")
+
+        # Create first tab
+        self.tab1.layout = QVBoxLayout(self)
+        self.pushButton1 = QPushButton("PyQt5 button")
+        self.tab1.layout.addWidget(self.pushButton1)
+        self.tab1.setLayout(self.tab1.layout)
+
+        # Add tabs to widget
+        self.layout.addWidget(self.tabs)
+        self.setLayout(self.layout)
+
+
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = App()
+    sys.exit(app.exec_())
