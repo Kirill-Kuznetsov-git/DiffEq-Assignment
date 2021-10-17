@@ -59,4 +59,4 @@ class SpinBoxes(QWidget):
         self.layout.addWidget(self.widget_3)
         self.layout.addWidget(self.widget_4)
         self.layout.addWidget(self.widget_5)
-        self.setGeometry(810, 150, 120, 270)
+        self.setGeometry(790, 150, 120, 270)
