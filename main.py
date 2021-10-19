@@ -2,9 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-# y^ = (y^2 + xy - x^2) / x^2
-# y = x * (1 + x^2 / 3) / (1 - x^2 / 3)
-# y(1) = 2
+
 class Equation:
     def __init__(self):
         pass

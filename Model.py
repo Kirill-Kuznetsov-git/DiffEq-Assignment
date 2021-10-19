@@ -1,4 +1,5 @@
 import numpy as np
+from random import randint
 
 
 class Equation:
@@ -7,14 +8,16 @@ class Equation:
         self.X = X
         self.y0 = y0
         self.N = N
-
+        self.cache_indexes_values = []
+        self.cache_equation_values = []
         self.x = np.linspace(self.x0, self.X, self.N)
 
     def calculate_prime(self, x, y):
-        return 1/x + 2 * y / (x * np.log(x))
+        return 1 / x + 2 * y / (x * np.log(x))
 
     def get_equation(self):
-        pass
+        if [self.x0, self.y0, self.X, self.N] in self.cache_indexes_values:
+            return self.cache_equation_values[self.cache_indexes_values.index([self.x0, self.y0, self.X, self.N])]
 
     def set_x0(self, x0):
         self.x0 = x0
@@ -42,7 +45,16 @@ class AnalyticalSolution(Equation):
         return self.const
 
     def get_equation(self):
+        super().get_equation()
         y = self.const * (np.log(self.x) ** 2) - np.log(self.x)
+
+        if len(self.cache_indexes_values) >= 10:
+            rand_int = randint(0, len(self.cache_indexes_values) - 1)
+            self.cache_equation_values[rand_int] = [self.x0, self.y0, self.X, self.N]
+            self.cache_equation_values[rand_int] = [self.x, y]
+        else:
+            self.cache_indexes_values.append([self.x0, self.y0, self.X, self.N])
+            self.cache_equation_values.append([self.x, y])
         return [self.x, y]
 
     def set_x0(self, x0):
@@ -60,15 +72,34 @@ class NumericalMethod(Equation):
         self.x_current = x0
         self.y = [y0]
 
+    def get_equation(self):
+        self.y = [self.y0]
+        self.x_current = self.x0
+        return super().get_equation()
+
+    def add_to_cache(self):
+        if len(self.cache_indexes_values) >= 10:
+            rand_int = randint(0, len(self.cache_indexes_values) - 1)
+            self.cache_equation_values[rand_int] = [self.x0, self.y0, self.X, self.N]
+            self.cache_equation_values[rand_int] = [self.x, self.y]
+        else:
+            self.cache_indexes_values.append([self.x0, self.y0, self.X, self.N])
+            self.cache_equation_values.append([self.x, self.y])
+
 
 class EulerMethod(NumericalMethod):
     def __init__(self, x0, y0, X, N):
         super().__init__(x0, y0, X, N)
 
     def get_equation(self):
+        res = super().get_equation()
+        if res: return res
+        h = (self.X - self.x0) / self.N
         for i in range(self.N - 1):
-            self.y.append(self.y[-1] + (self.X - self.x0) / self.N * self.calculate_prime(self.x_current, self.y[-1]))
+            self.y.append(self.y[-1] + h * self.calculate_prime(self.x_current, self.y[-1]))
             self.x_current += (self.X - self.x0) / self.N
+
+        self.add_to_cache()
         return [self.x, self.y]
 
 
@@ -77,12 +108,16 @@ class ImprovedEulerMethod(NumericalMethod):
         super().__init__(x0, y0, X, N)
 
     def get_equation(self):
+        res = super().get_equation()
+        if res: return res
         h = (self.X - self.x0) / self.N
         for i in range(self.N - 1):
-            current_prime = self.calculate_prime(self.x_current, self.y[-1])
-            self.y.append(self.y[-1] +
-                          h * (current_prime + self.calculate_prime(self.x_current + h, self.y[-1] + h * current_prime)) / 2)
+            self.y.append(self.y[-1] + h * self.calculate_prime(self.x_current + h / 2,
+                                                                self.y[-1] + h / 2 * self.calculate_prime(
+                                                                    self.x_current, self.y[-1])))
             self.x_current += (self.X - self.x0) / self.N
+
+        self.add_to_cache()
         return [self.x, self.y]
 
 
@@ -91,14 +126,18 @@ class RungeMethod(NumericalMethod):
         super().__init__(x0, y0, X, N)
 
     def get_equation(self):
+        res = super().get_equation()
+        if res: return res
         h = (self.X - self.x0) / self.N
         for i in range(self.N - 1):
             k1 = self.calculate_prime(self.x_current, self.y[-1])
             k2 = self.calculate_prime(self.x_current + h / 2, self.y[-1] + h / 2 * k1)
             k3 = self.calculate_prime(self.x_current + h / 2, self.y[-1] + h / 2 * k2)
             k4 = self.calculate_prime(self.x_current + h, self.y[-1] + h * k3)
-            self.y.append(self.y[-1] + h / 6 * (k1 + 2 * k2 + 2 * k3 + 2 * k4))
+            self.y.append(self.y[-1] + h / 6 * (k1 + 2 * k2 + 2 * k3 + k4))
             self.x_current += (self.X - self.x0) / self.N
+
+        self.add_to_cache()
         return [self.x, self.y]
 
 

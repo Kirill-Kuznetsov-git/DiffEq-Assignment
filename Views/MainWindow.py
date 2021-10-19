@@ -8,11 +8,8 @@ from ThirdWindow import ThirdWindow
 
 import sys
 
-from Model import *
-
 
 class App(QMainWindow):
-
     def __init__(self):
         super().__init__()
         self.title = 'Differential Equations'
@@ -39,18 +36,10 @@ class Table(QWidget):
     def __init__(self, parent):
         super(QWidget, self).__init__(parent)
 
-        self.equations = []
-        self.equations_cache = []
-
         self.table_widget = QTabWidget(self)
         self.table_widget.setGeometry(0, 0, 750, 500)
 
-        self.equations.append(AnalyticalSolution(2, 0, 1000, 50))
-        self.equations.append(EulerMethod(2, 0, 1000, 50))
-        self.equations.append(ImprovedEulerMethod(2, 0, 1000, 50))
-        self.equations.append(RungeMethod(2, 0, 1000, 50))
-
-        self.tab1 = FirstWindow(self, self.equations)
+        self.tab1 = FirstWindow(self)
         self.table_widget.addTab(self.tab1, 'Solutions')
         self.tab2 = SecondWindow(self)
         self.table_widget.addTab(self.tab2, 'LTE')
