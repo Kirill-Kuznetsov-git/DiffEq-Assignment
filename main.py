@@ -1,72 +1,47 @@
-import pandas as pd
-import matplotlib.pyplot as plt
+import sys
+import random
+import matplotlib
+matplotlib.use('Qt5Agg')
+
+from PyQt5 import QtCore, QtWidgets
+
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 
+class MplCanvas(FigureCanvas):
 
-class Equation:
-    def __init__(self):
-        pass
-
-    def calculate_prime(self, x, y):
-        return (y ** 2 + x * y - x ** 2) / x ** 2
-
-    def calculate(self, x):
-        return x * (1 + (x ** 2) / 3) / (1 - (x ** 2) / 3)
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+        super(MplCanvas, self).__init__(fig)
 
 
-class EulerMethod:
-    def __init__(self):
-        pass
+class MainWindow(QtWidgets.QMainWindow):
 
-    def calculate(self, x_i, y_i, h):
-        return y_i + h * Equation().calculate_prime(x_i, y_i)
+    def __init__(self, *args, **kwargs):
+        super(MainWindow, self).__init__(*args, **kwargs)
 
+        self.canvas = MplCanvas(self, width=5, height=4, dpi=100)
+        self.setCentralWidget(self.canvas)
 
-class Error:
-    def __init__(self):
-        pass
+        n_data = 50
+        self.xdata = list(range(n_data))
+        self.ydata = [random.randint(0, 10) for i in range(n_data)]
+        self.update_plot()
 
-    def calculate_lte(self, x_i, y_exact_i, y_exact_i_1, h):
-        y_euler_i_1_with_exact = EulerMethod().calculate(x_i, y_exact_i, h)
-        return abs(y_euler_i_1_with_exact - y_exact_i_1)
-
-    def calculate_gte(self, x_i, y_euler_i, h, y_euler_i_1=None, y_exact_i_1=None):
-        y_euler_i_1 = EulerMethod().calculate(x_i, y_euler_i, h) if y_euler_i_1 is None else y_euler_i_1
-        y_exact_i_1 = Equation().calculate(x_i + h) if y_exact_i_1 is None else y_exact_i_1
-        return abs(y_exact_i_1 - y_euler_i_1)
+        self.show()
 
 
-def main():
-    df = pd.DataFrame(columns=['x', 'y_exact', 'y_euler', 'lte', 'gte'])
-    h = float(input("Your step: "))
-
-    x = 1
-    y_exact = 2
-    y_euler = 2
-    lte = 0
-    gte = 0
-    n = int((1.5 - x) // h) + 1
-
-    df.loc[0] = [x, y_exact, y_euler, lte, gte]
-
-    for i in range(1, 50):
-        x_new = x + h
-        y_exact_new = Equation().calculate(x_new)
-        y_euler_new = EulerMethod().calculate(x, y_euler, h)
-        lte = Error().calculate_lte(x, y_exact, y_exact_new, h)
-        gte = Error().calculate_gte(x, y_euler, h, y_euler_new, y_exact_new)
-
-        x = x_new
-        y_exact = y_exact_new
-        y_euler = y_euler_new
-
-        df.loc[i] = [x, y_exact, y_euler, lte, gte]
-
-    print(df)
-    plt.scatter(df.x, df.y_exact)
-    plt.scatter(df.x, df.y_euler)
-    plt.show()
+    def update_plot(self):
+        # Drop off the first y element, append a new one.
+        self.ydata = self.ydata[1:] + [random.randint(0, 10)]
+        self.canvas.axes.cla()  # Clear the canvas.
+        self.canvas.axes.plot(self.xdata, self.ydata, 'r')
+        # Trigger the canvas to update and redraw.
+        self.canvas.draw()
 
 
-if __name__ == '__main__':
-    main()
+app = QtWidgets.QApplication(sys.argv)
+w = MainWindow()
+app.exec_()

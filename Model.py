@@ -11,6 +11,7 @@ class Equation:
         self.cache_indexes_values = []
         self.cache_equation_values = []
         self.x = np.linspace(self.x0, self.X, self.N)
+        self.vision = True
 
     def calculate_prime(self, x, y):
         return 1 / x + 2 * y / (x * np.log(x))
@@ -71,6 +72,18 @@ class NumericalMethod(Equation):
         super().__init__(x0, y0, X, N)
         self.x_current = x0
         self.y = [y0]
+
+    # def get_lte(self) -> list:
+    #     res = []
+    #     solv = self.get_equation()
+    #     for i in range(len(solv[1])):
+    #
+    #
+    # def get_gte(self, n0) -> list:
+    #     res = []
+    #     for i in range(n0, self.N):
+    #         res.append(max(self.get_lte(i)))
+    #     return res
 
     def get_equation(self):
         self.y = [self.y0]
@@ -139,11 +152,3 @@ class RungeMethod(NumericalMethod):
 
         self.add_to_cache()
         return [self.x, self.y]
-
-
-class LTE:
-    pass
-
-
-class GTE:
-    pass

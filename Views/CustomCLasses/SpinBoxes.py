@@ -6,13 +6,13 @@ class SpinBoxes(QWidget):
     def __init__(self, parent):
         super(QWidget, self).__init__(parent)
         self.layout = QVBoxLayout(self)
+        self.parent = parent
 
         self.widget_1 = QWidget()
         self.widget_1.layout = QHBoxLayout(self)
         self.x0 = QSpinBox(self)
         self.x0.setValue(2)
         self.x0.setMaximum(100000)
-        self.x0.valueChanged.connect(self.change_x0)
         self.label_x0 = QLabel(self)
         self.label_x0.setText("x_0:")
         self.widget_1.layout.addWidget(self.label_x0)
@@ -24,7 +24,6 @@ class SpinBoxes(QWidget):
         self.y0 = QSpinBox(self)
         self.y0.setValue(0)
         self.y0.setMaximum(100000)
-        self.y0.valueChanged.connect(self.change_y0)
         self.label_y0 = QLabel(self)
         self.label_y0.setText("y_0:")
         self.widget_2.layout.addWidget(self.label_y0)
@@ -35,7 +34,6 @@ class SpinBoxes(QWidget):
         self.widget_3.layout = QHBoxLayout(self)
         self.X = QSpinBox(self)
         self.X.setMaximum(100000)
-        self.X.valueChanged.connect(self.change_X)
         self.X.setValue(100)
         self.label_X = QLabel(self)
         self.label_X.setText("X:  ")
@@ -48,7 +46,6 @@ class SpinBoxes(QWidget):
         self.n0 = QSpinBox(self)
         self.n0.setValue(10)
         self.n0.setMaximum(100000)
-        self.n0.valueChanged.connect(self.change_n0)
         self.label_n0 = QLabel(self)
         self.label_n0.setText("n_0:  ")
         self.widget_5.layout.addWidget(self.label_n0)
@@ -58,9 +55,8 @@ class SpinBoxes(QWidget):
         self.widget_4 = QWidget()
         self.widget_4.layout = QHBoxLayout(self)
         self.N = QSpinBox(self)
-        self.N.setValue(40)
         self.N.setMaximum(100000)
-        self.N.valueChanged.connect(self.change_N)
+        self.N.setValue(120)
         self.label_N = QLabel(self)
         self.label_N.setText("N:  ")
         self.widget_4.layout.addWidget(self.label_N)
@@ -74,17 +70,15 @@ class SpinBoxes(QWidget):
         self.layout.addWidget(self.widget_5)
         self.setGeometry(790, 150, 200, 270)
 
-    def change_x0(self):
-        return self.x0.value()
+        self.connect_all()
 
-    def change_y0(self):
-        return self.y0.value()
+    def connect_all(self):
+        self.x0.valueChanged.connect(self.change_value)
+        self.y0.valueChanged.connect(self.change_value)
+        self.n0.valueChanged.connect(self.change_value)
+        self.N.valueChanged.connect(self.change_value)
+        self.X.valueChanged.connect(self.change_value)
 
-    def change_X(self):
-        return self.X.value()
-
-    def change_N(self):
-        return self.N.value()
-
-    def change_n0(self):
-        return self.n0.value()
+    def change_value(self):
+        self.parent.change_spinboxes({"x0": self.x0.value(), "y0": self.y0.value(), "X": self.X.value(),
+                                      "n0": self.n0.value(), "N": self.N.value()})
