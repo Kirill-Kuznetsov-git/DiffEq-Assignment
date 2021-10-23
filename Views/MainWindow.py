@@ -1,5 +1,4 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget, QListWidget
-
 from CustomCLasses.SpinBoxes import SpinBoxes
 from CustomCLasses.CheckBoxes import CheckBoxes
 from FirstWindow import FirstWindow
@@ -7,6 +6,8 @@ from SecondWindow import SecondWindow
 from ThirdWindow import ThirdWindow
 
 import sys
+
+from Model import *
 
 
 class App(QMainWindow):
@@ -37,6 +38,12 @@ class Table(QWidget):
 
         self.parent = parent
 
+        self.equations = []
+        self.equations.append(AnalyticalSolution(2, 0, 100, 120))
+        self.equations.append(EulerMethod(2, 0, 100, 120))
+        self.equations.append(ImprovedEulerMethod(2, 0, 100, 120))
+        self.equations.append(RungeMethod(2, 0, 100, 120))
+
         self.table_widget = QTabWidget(self)
         self.table_widget.setGeometry(0, 0, 750, 500)
 
@@ -50,11 +57,24 @@ class Table(QWidget):
         self.tab3 = ThirdWindow(self)
         self.table_widget.addTab(self.tab3, 'GTE')
 
-    def change_spinboxes(self, values):
-        self.tab1.change_attributes(values)
+    def change_spinboxes(self, attributes):
+        for i in range(len(self.equations)):
+            if attributes.get('x0'): self.equations[i].set_x0(attributes['x0'])
+            if attributes.get('y0'): self.equations[i].set_y0(attributes['y0'])
+            if attributes.get('N'): self.equations[i].set_N(attributes['N'])
+            if attributes.get('X'): self.equations[i].set_X(attributes['X'])
+        self.update_all()
 
     def change_checkboxes(self, name: str, value: bool):
-        self.tab1.change_checkboxes(name, value)
+        for i in range(len(self.equations)):
+            if str(type(self.equations[i])).split("Model.")[1].split("'")[0] == name:
+                self.equations[i].vision = value
+        self.update_all()
+
+    def update_all(self):
+        self.tab1.update()
+        self.tab2.update()
+        # self.tab3.update()
 
 
 if __name__ == '__main__':

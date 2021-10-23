@@ -16,6 +16,9 @@ class Equation:
     def calculate_prime(self, x, y):
         return 1 / x + 2 * y / (x * np.log(x))
 
+    def get_exact_value(self, x):
+        pass
+
     def get_equation(self):
         if [self.x0, self.y0, self.X, self.N] in self.cache_indexes_values:
             return self.cache_equation_values[self.cache_indexes_values.index([self.x0, self.y0, self.X, self.N])]
@@ -58,6 +61,9 @@ class AnalyticalSolution(Equation):
             self.cache_equation_values.append([self.x, y])
         return [self.x, y]
 
+    def get_exact_value(self, x):
+        return self.const * (np.log(x) ** 2) - np.log(x)
+
     def set_x0(self, x0):
         super().set_x0(x0)
         self.calculate_const()
@@ -71,19 +77,8 @@ class NumericalMethod(Equation):
     def __init__(self, x0, y0, X, N):
         super().__init__(x0, y0, X, N)
         self.x_current = x0
+        self.result = []
         self.y = [y0]
-
-    # def get_lte(self) -> list:
-    #     res = []
-    #     solv = self.get_equation()
-    #     for i in range(len(solv[1])):
-    #
-    #
-    # def get_gte(self, n0) -> list:
-    #     res = []
-    #     for i in range(n0, self.N):
-    #         res.append(max(self.get_lte(i)))
-    #     return res
 
     def get_equation(self):
         self.y = [self.y0]
@@ -99,6 +94,16 @@ class NumericalMethod(Equation):
             self.cache_indexes_values.append([self.x0, self.y0, self.X, self.N])
             self.cache_equation_values.append([self.x, self.y])
 
+    def get_lte(self, analytic_solution: AnalyticalSolution) -> list:
+        errors = []
+        h = (self.X - self.x0) / self.N
+        self.x_current = self.x0
+        self.y = self.get_equation()[1]
+        for i in range(self.N):
+            errors.append(abs(self.y[i] - analytic_solution.get_exact_value(self.x_current)))
+            self.x_current += h
+        return [analytic_solution.x, errors]
+
 
 class EulerMethod(NumericalMethod):
     def __init__(self, x0, y0, X, N):
@@ -113,6 +118,9 @@ class EulerMethod(NumericalMethod):
             self.x_current += (self.X - self.x0) / self.N
 
         self.add_to_cache()
+        return [self.x, self.y]
+
+    def get_exact_value(self, x):
         return [self.x, self.y]
 
 
@@ -152,3 +160,10 @@ class RungeMethod(NumericalMethod):
 
         self.add_to_cache()
         return [self.x, self.y]
+
+
+# def get_gte(self, n0) -> list:
+#     res = []
+#     for i in range(n0, self.N):
+#         res.append(max(self.get_lte(i)))
+#     return res
