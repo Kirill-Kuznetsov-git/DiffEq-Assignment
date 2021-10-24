@@ -10,19 +10,19 @@ class CheckBoxes(QWidget):
         self.parent = parent
 
         self.analytical_solution = QCheckBox(self)
-        self.analytical_solution.setText("Analytical Solution(BLACK)")
+        self.analytical_solution.setText("Analytical Solution")
         self.analytical_solution.setChecked(True)
 
         self.checkbox_euler = QCheckBox(self)
-        self.checkbox_euler.setText("Euler Method(RED)")
+        self.checkbox_euler.setText("Euler Method")
         self.checkbox_euler.setChecked(True)
 
         self.checkbox_euler_improved = QCheckBox(self)
-        self.checkbox_euler_improved.setText("Euler Improved Method(BLUE)")
+        self.checkbox_euler_improved.setText("Euler Improved Method")
         self.checkbox_euler_improved.setChecked(True)
 
         self.checkbox_runge = QCheckBox(self)
-        self.checkbox_runge.setText("Runge-Kutta Method(GREEN)")
+        self.checkbox_runge.setText("Runge-Kutta Method")
         self.checkbox_runge.setChecked(True)
 
         self.layout.addWidget(self.analytical_solution)
