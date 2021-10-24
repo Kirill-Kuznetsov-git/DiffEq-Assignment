@@ -28,7 +28,6 @@ class SecondWindow(QWidget):
         self.canvas.axes.cla()
         for i in range(1, len(self.equations)):
             if self.equations[i].vision is True:
-                print(self.equations[i])
                 res = self.equations[i].get_lte(self.equations[0])
                 self.canvas.axes.plot(res[0], res[1], color=self.colors[str(type(self.equations[i])).split("Model.")[1].split("'")[0]])
         self.canvas.draw()

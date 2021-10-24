@@ -8,8 +8,6 @@ class Equation:
         self.X = X
         self.y0 = y0
         self.N = N
-        self.cache_indexes_values = []
-        self.cache_equation_values = []
         self.x = np.linspace(self.x0, self.X, self.N)
         self.vision = True
 
@@ -20,8 +18,7 @@ class Equation:
         pass
 
     def get_equation(self):
-        if [self.x0, self.y0, self.X, self.N] in self.cache_indexes_values:
-            return self.cache_equation_values[self.cache_indexes_values.index([self.x0, self.y0, self.X, self.N])]
+        pass
 
     def set_x0(self, x0):
         self.x0 = x0
@@ -51,14 +48,6 @@ class AnalyticalSolution(Equation):
     def get_equation(self):
         super().get_equation()
         y = self.const * (np.log(self.x) ** 2) - np.log(self.x)
-
-        if len(self.cache_indexes_values) >= 10:
-            rand_int = randint(0, len(self.cache_indexes_values) - 1)
-            self.cache_equation_values[rand_int] = [self.x0, self.y0, self.X, self.N]
-            self.cache_equation_values[rand_int] = [self.x, y]
-        else:
-            self.cache_indexes_values.append([self.x0, self.y0, self.X, self.N])
-            self.cache_equation_values.append([self.x, y])
         return [self.x, y]
 
     def get_exact_value(self, x):
@@ -74,40 +63,44 @@ class AnalyticalSolution(Equation):
 
 
 class NumericalMethod(Equation):
-    def __init__(self, x0, y0, X, N):
+    def __init__(self, x0, y0, X, N, n0):
         super().__init__(x0, y0, X, N)
         self.x_current = x0
-        self.result = []
-        self.y = [y0]
+        self.y = [self.y0]
+        self.n0 = n0
+
+    def set_n0(self, n0):
+        self.n0 = n0
+        print(1)
 
     def get_equation(self):
-        self.y = [self.y0]
         self.x_current = self.x0
-        return super().get_equation()
-
-    def add_to_cache(self):
-        if len(self.cache_indexes_values) >= 10:
-            rand_int = randint(0, len(self.cache_indexes_values) - 1)
-            self.cache_equation_values[rand_int] = [self.x0, self.y0, self.X, self.N]
-            self.cache_equation_values[rand_int] = [self.x, self.y]
-        else:
-            self.cache_indexes_values.append([self.x0, self.y0, self.X, self.N])
-            self.cache_equation_values.append([self.x, self.y])
+        self.y = [self.y0]
 
     def get_lte(self, analytic_solution: AnalyticalSolution) -> list:
         errors = []
         h = (self.X - self.x0) / self.N
         self.x_current = self.x0
-        self.y = self.get_equation()[1]
         for i in range(self.N):
             errors.append(abs(self.y[i] - analytic_solution.get_exact_value(self.x_current)))
             self.x_current += h
         return [analytic_solution.x, errors]
 
+    def get_gte(self, analytic_solution: AnalyticalSolution):
+        if self.n0 >= self.N:
+            return [[0], [0]]
+        errors = []
+        n_old = self.N
+        for i in range(int(self.N - self.n0)):
+            self.set_N(self.n0 + i)
+            errors.append(max(self.get_lte(analytic_solution)[1]))
+        self.set_N(n_old)
+        return [np.linspace(self.n0, self.N, int(self.N - self.n0)), errors]
+
 
 class EulerMethod(NumericalMethod):
-    def __init__(self, x0, y0, X, N):
-        super().__init__(x0, y0, X, N)
+    def __init__(self, x0, y0, X, N, n0):
+        super().__init__(x0, y0, X, N, n0)
 
     def get_equation(self):
         res = super().get_equation()
@@ -117,16 +110,12 @@ class EulerMethod(NumericalMethod):
             self.y.append(self.y[-1] + h * self.calculate_prime(self.x_current, self.y[-1]))
             self.x_current += (self.X - self.x0) / self.N
 
-        self.add_to_cache()
-        return [self.x, self.y]
-
-    def get_exact_value(self, x):
         return [self.x, self.y]
 
 
 class ImprovedEulerMethod(NumericalMethod):
-    def __init__(self, x0, y0, X, N):
-        super().__init__(x0, y0, X, N)
+    def __init__(self, x0, y0, X, N, n0):
+        super().__init__(x0, y0, X, N, n0)
 
     def get_equation(self):
         res = super().get_equation()
@@ -138,13 +127,12 @@ class ImprovedEulerMethod(NumericalMethod):
                                                                     self.x_current, self.y[-1])))
             self.x_current += (self.X - self.x0) / self.N
 
-        self.add_to_cache()
         return [self.x, self.y]
 
 
 class RungeMethod(NumericalMethod):
-    def __init__(self, x0, y0, X, N):
-        super().__init__(x0, y0, X, N)
+    def __init__(self, x0, y0, X, N, n0):
+        super().__init__(x0, y0, X, N, n0)
 
     def get_equation(self):
         res = super().get_equation()
@@ -158,12 +146,4 @@ class RungeMethod(NumericalMethod):
             self.y.append(self.y[-1] + h / 6 * (k1 + 2 * k2 + 2 * k3 + k4))
             self.x_current += (self.X - self.x0) / self.N
 
-        self.add_to_cache()
         return [self.x, self.y]
-
-
-# def get_gte(self, n0) -> list:
-#     res = []
-#     for i in range(n0, self.N):
-#         res.append(max(self.get_lte(i)))
-#     return res

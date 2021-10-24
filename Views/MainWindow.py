@@ -40,9 +40,9 @@ class Table(QWidget):
 
         self.equations = []
         self.equations.append(AnalyticalSolution(2, 0, 100, 120))
-        self.equations.append(EulerMethod(2, 0, 100, 120))
-        self.equations.append(ImprovedEulerMethod(2, 0, 100, 120))
-        self.equations.append(RungeMethod(2, 0, 100, 120))
+        self.equations.append(EulerMethod(2, 0, 100, 120, 10))
+        self.equations.append(ImprovedEulerMethod(2, 0, 100, 120, 10))
+        self.equations.append(RungeMethod(2, 0, 100, 120, 10))
 
         self.table_widget = QTabWidget(self)
         self.table_widget.setGeometry(0, 0, 750, 500)
@@ -61,6 +61,7 @@ class Table(QWidget):
         for i in range(len(self.equations)):
             if attributes.get('x0'): self.equations[i].set_x0(attributes['x0'])
             if attributes.get('y0'): self.equations[i].set_y0(attributes['y0'])
+            if attributes.get('n0') and str(type(self.equations[i])) != "<class 'Model.AnalyticalSolution'>": self.equations[i].set_n0(attributes['n0'])
             if attributes.get('N'): self.equations[i].set_N(attributes['N'])
             if attributes.get('X'): self.equations[i].set_X(attributes['X'])
         self.update_all()
@@ -74,7 +75,7 @@ class Table(QWidget):
     def update_all(self):
         self.tab1.update()
         self.tab2.update()
-        # self.tab3.update()
+        self.tab3.update()
 
 
 if __name__ == '__main__':
