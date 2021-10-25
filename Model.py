@@ -51,6 +51,7 @@ class AnalyticalSolution(Equation):
         return [self.x, y]
 
     def get_exact_value(self, x):
+
         return self.const * (np.log(x) ** 2) - np.log(x)
 
     def set_x0(self, x0):
@@ -71,7 +72,6 @@ class NumericalMethod(Equation):
 
     def set_n0(self, n0):
         self.n0 = n0
-        print(1)
 
     def get_equation(self):
         self.x_current = self.x0
@@ -80,9 +80,11 @@ class NumericalMethod(Equation):
     def get_lte(self, analytic_solution: AnalyticalSolution) -> list:
         errors = []
         h = (self.X - self.x0) / self.N
+        self.y = self.get_equation()[1]
         self.x_current = self.x0
         for i in range(self.N):
             errors.append(abs(self.y[i] - analytic_solution.get_exact_value(self.x_current)))
+
             self.x_current += h
         return [analytic_solution.x, errors]
 
@@ -92,7 +94,7 @@ class NumericalMethod(Equation):
         errors = []
         n_old = self.N
         for i in range(int(self.N - self.n0)):
-            self.set_N(self.n0 + i)
+            self.set_N(self.n0 + i - 1)
             errors.append(max(self.get_lte(analytic_solution)[1]))
         self.set_N(n_old)
         return [np.linspace(self.n0, self.N, int(self.N - self.n0)), errors]
@@ -104,6 +106,7 @@ class EulerMethod(NumericalMethod):
 
     def get_equation(self):
         res = super().get_equation()
+        print(self.y)
         if res: return res
         h = (self.X - self.x0) / self.N
         for i in range(self.N - 1):

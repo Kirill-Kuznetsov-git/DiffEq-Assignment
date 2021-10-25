@@ -26,9 +26,11 @@ class SecondWindow(QWidget):
 
     def update(self):
         self.canvas.axes.cla()
+        leg = []
         for i in range(1, len(self.equations)):
             if self.equations[i].vision is True:
+                leg.append(str(type(self.equations[i])).split("Model.")[1].split("'")[0])
                 res = self.equations[i].get_lte(self.equations[0])
                 self.canvas.axes.plot(res[0], res[1], color=self.colors[str(type(self.equations[i])).split("Model.")[1].split("'")[0]])
-        self.canvas.axes.legend(["Euler Method", "Improved Euler Method", "Runge-Kutta Method"])
+        self.canvas.axes.legend(leg)
         self.canvas.draw()

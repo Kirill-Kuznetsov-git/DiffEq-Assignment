@@ -74,8 +74,11 @@ class Table(QWidget):
 
     def update_all(self):
         self.tab1.update()
+        print("First Updated")
         self.tab2.update()
+        print("Second Updated")
         self.tab3.update()
+        print("Third Updated")
 
 
 if __name__ == '__main__':

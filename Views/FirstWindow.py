@@ -22,11 +22,13 @@ class FirstWindow(QWidget):
 
     def update(self):
         self.canvas.axes.cla()
+        leg = []
         for equation in self.equations:
             if equation.vision is True:
+                leg.append(str(type(equation)).split("Model.")[1].split("'")[0])
                 res = equation.get_equation()
                 self.canvas.axes.plot(res[0], res[1], color=self.colors[str(type(equation)).split("Model.")[1].split("'")[0]])
-        self.canvas.axes.legend(["Analytical Solution", "Euler Method", "Improved Euler Method", "Runge-Kutta Method"])
+        self.canvas.axes.legend(leg)
         self.canvas.draw()
 
 
