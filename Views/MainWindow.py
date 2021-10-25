@@ -39,10 +39,10 @@ class Table(QWidget):
         self.parent = parent
 
         self.equations = []
-        self.equations.append(AnalyticalSolution(2, 0, 100, 120))
-        self.equations.append(EulerMethod(2, 0, 100, 120, 10))
-        self.equations.append(ImprovedEulerMethod(2, 0, 100, 120, 10))
-        self.equations.append(RungeMethod(2, 0, 100, 120, 10))
+        self.equations.append(AnalyticalSolution(2, 0, 12, 120))
+        self.equations.append(EulerMethod(2, 0, 12, 120, 10))
+        self.equations.append(ImprovedEulerMethod(2, 0, 12, 120, 10))
+        self.equations.append(RungeMethod(2, 0, 12, 120, 10))
 
         self.table_widget = QTabWidget(self)
         self.table_widget.setGeometry(0, 0, 750, 500)

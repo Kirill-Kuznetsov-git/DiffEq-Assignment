@@ -34,7 +34,7 @@ class SpinBoxes(QWidget):
         self.widget_3.layout = QHBoxLayout(self)
         self.X = QSpinBox(self)
         self.X.setMaximum(100000)
-        self.X.setValue(100)
+        self.X.setValue(12)
         self.label_X = QLabel(self)
         self.label_X.setText("X:  ")
         self.widget_3.layout.addWidget(self.label_X)

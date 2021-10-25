@@ -27,5 +27,5 @@ class ThirdWindow(QWidget):
             if self.equations[i].vision is True:
                 res = self.equations[i].get_gte(self.equations[0])
                 self.canvas.axes.plot(res[0], res[1], color=self.colors[str(type(self.equations[i])).split("Model.")[1].split("'")[0]])
-        self.canvas.axes.legend(["Analytical Solution", "Euler Method", "Improved Euler Method", "Runge Method"])
+        self.canvas.axes.legend(["Euler Method", "Improved Euler Method", "Runge-Kutta Method"])
         self.canvas.draw()

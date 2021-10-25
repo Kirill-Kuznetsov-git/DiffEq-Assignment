@@ -26,7 +26,7 @@ class FirstWindow(QWidget):
             if equation.vision is True:
                 res = equation.get_equation()
                 self.canvas.axes.plot(res[0], res[1], color=self.colors[str(type(equation)).split("Model.")[1].split("'")[0]])
-        self.canvas.axes.legend(["Analytical Solution", "Euler Method", "Improved Euler Method", "Runge Method"])
+        self.canvas.axes.legend(["Analytical Solution", "Euler Method", "Improved Euler Method", "Runge-Kutta Method"])
         self.canvas.draw()
 
 
