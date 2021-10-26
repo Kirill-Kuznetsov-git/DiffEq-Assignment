@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget, QListWidget
+from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget, QListWidget, QLabel
 from CustomCLasses.SpinBoxes import SpinBoxes
 from CustomCLasses.CheckBoxes import CheckBoxes
 from FirstWindow import FirstWindow
@@ -58,6 +58,10 @@ class Table(QWidget):
         self.table_widget.addTab(self.tab3, 'GTE')
 
     def change_spinboxes(self, attributes):
+        if attributes.get('n0') < abs(attributes.get('x0') - attributes.get('X')) or \
+                attributes.get('N') < abs(attributes.get('x0') - attributes.get('X')) or \
+                attributes.get('x0') < 0 or attributes.get("X") < 0:
+            return {"Error": 1, "Description": "Wrong attributes"}
         for i in range(len(self.equations)):
             if attributes.get('x0'): self.equations[i].set_x0(attributes['x0'])
             if attributes.get('y0'): self.equations[i].set_y0(attributes['y0'])
@@ -65,6 +69,7 @@ class Table(QWidget):
             if attributes.get('N'): self.equations[i].set_N(attributes['N'])
             if attributes.get('X'): self.equations[i].set_X(attributes['X'])
         self.update_all()
+        return {"Error": 0, "Description": "Success"}
 
     def change_checkboxes(self, name: str, value: bool):
         for i in range(len(self.equations)):

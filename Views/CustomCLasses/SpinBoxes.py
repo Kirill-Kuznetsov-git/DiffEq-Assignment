@@ -45,7 +45,6 @@ class SpinBoxes(QWidget):
         self.widget_5.layout = QHBoxLayout(self)
         self.n0 = QSpinBox(self)
         self.n0.setMaximum(100000)
-        self.n0.setMinimum(self.X.value() - self.x0.value())
         self.n0.setValue(10)
         self.label_n0 = QLabel(self)
         self.label_n0.setText("n_0:  ")
@@ -57,7 +56,6 @@ class SpinBoxes(QWidget):
         self.widget_4.layout = QHBoxLayout(self)
         self.N = QSpinBox(self)
         self.N.setMaximum(100000)
-        self.N.setMinimum(self.X.value() - self.x0.value())
         self.N.setValue(120)
         self.label_N = QLabel(self)
         self.label_N.setText("N:  ")
@@ -65,11 +63,15 @@ class SpinBoxes(QWidget):
         self.widget_4.layout.addWidget(self.N)
         self.widget_4.setLayout(self.widget_4.layout)
 
+        self.label_error = QLabel(self)
+        self.label_error.setText("")
+
         self.layout.addWidget(self.widget_1)
         self.layout.addWidget(self.widget_2)
         self.layout.addWidget(self.widget_3)
         self.layout.addWidget(self.widget_4)
         self.layout.addWidget(self.widget_5)
+        self.layout.addWidget(self.label_error)
         self.setGeometry(790, 150, 200, 270)
 
         self.connect_all()
@@ -82,5 +84,9 @@ class SpinBoxes(QWidget):
         self.X.valueChanged.connect(self.change_value)
 
     def change_value(self):
-        self.parent.change_spinboxes({"x0": self.x0.value(), "y0": self.y0.value(), "X": self.X.value(),
+        ans = self.parent.change_spinboxes({"x0": self.x0.value(), "y0": self.y0.value(), "X": self.X.value(),
                                       "n0": self.n0.value(), "N": self.N.value()})
+        if ans["Error"] == 1:
+            self.label_error.setText(ans['Description'])
+        elif ans["Error"] == 0:
+            self.label_error.setText("")

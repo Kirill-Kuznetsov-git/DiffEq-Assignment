@@ -106,7 +106,6 @@ class EulerMethod(NumericalMethod):
 
     def get_equation(self):
         res = super().get_equation()
-        print(self.y)
         if res: return res
         h = (self.X - self.x0) / self.N
         for i in range(self.N - 1):
